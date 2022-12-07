@@ -101,19 +101,3 @@ def OnRun():
     piezas_medidas = 1
   
 
-  '''This script imports the default action script from the installation folder. 
-   To modify the source, remove all the lines of this script, Press Ctrl + J and Choose Snippet "ActionScript" from the list.'''
-from vcScript import *
-import ActionScript.action_script as default_actions
-
-
-def OnRun():
-  default_actions.OnRun()
-def OnStart():
-  default_actions.OnStart()
-def OnReset():
-  default_actions.OnReset()
-def OnFinalize():
- default_actions.OnFinalize()
-    
-default_actions.AutoConfigure()
