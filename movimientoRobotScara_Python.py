@@ -7,6 +7,13 @@
 from vcScript import *
 from vcHelpers.Robot2 import *
 
+component = getComponent()
+signalParada = component.findBehaviour("ParadaEmergencia")
+signalMarcha = component.findBehaviour("MarchaNormal")
+signalSensorIn = component.findBehaviour("SensorIn")
+signalPiezaMalaDetectada = component.findBehaviour("PiezaMalaDetectada")
+signalLlegadaBandeja = component.findBehaviour("LlegadaBandeja")
+
 # Definicion de puntos
 posBandeja = [150, 0, 0]
 offsetx = 0
@@ -65,6 +72,7 @@ def MoveToMeasurePoint(robot,pos,aproxOffset):
   robot.delay(0.5)
   
   # Ejecutar medicion (sacar alguna señal con medicion buena o mala)
+  if signalSensorIn.Value: signalPiezaMalaDetectada.signal(True)
   
   # Vuelta a pto. aprox
   robot.linearMoveToPosition(pos[0],pos[1],pos[2]+aproxOffset,0,0,0,"irobot")
@@ -83,21 +91,19 @@ def MoveAllMeasurePoints(robot):
 
 
 def OnRun():
+  signalParada.signal(False)
+  signalMarcha.signal(True)
+  signalPiezaMalaDetectada.signal(False)
+  
   robot = getRobot()
   robot.driveJoints(0,0,0,0,0,0)
   robot.delay(0.5)
   
-  ocupado = 1
-  piezas_medidas = 0
-  
-  
-  while not ocupado:
-    llegan_piezas = 0
-      
-  if not piezas_medidas and ocupado:
-    MoveAllMeasurePoints(robot)
-    robot.driveJoints(0,0,0,0,0,0)
-    robot.delay(0.5)
-    piezas_medidas = 1
-  
-
+  while not signalParada.Value:
+    while not signalLlegadaBandeja.Value: robot.delay(0.3)
+    
+    # Flanco de subida
+    if signalMarcha.Value:
+      MoveAllMeasurePoints(robot)
+    
+    while signalLlegadaBandeja.Value: robot.delay(0.3)
