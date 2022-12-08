@@ -11,4 +11,4 @@ Conectar a Matlab: https://academy.visualcomponents.com/lessons/connect-a-remote
 https://github.com/users/AlbaCorreal/projects/2/views/1
 
 ## Issue para las ideas
-#12
+https://github.com/AlbaCorreal/Digital-Twins/issues/12
