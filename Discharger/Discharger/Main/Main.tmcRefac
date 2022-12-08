@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Refactors>
+  <Renames>
+    <RenamedType>
+      <Type guid="7aa37bff-8033-453f-8a18-c21a3dd6f3b9">FB_OBJECT_TEMPLATE</Type>
+      <From>FB_Object_Template</From>
+      <To>FB_Object_Template_SFC</To>
+    </RenamedType>
+    <RenamedType>
+      <Type guid="30bafdc6-6690-419c-8cbe-ff0c64e369c1">FB_COORDINADOR</Type>
+      <From>FB_Coordinador</From>
+      <To>FB_Coordinador_ST</To>
+    </RenamedType>
+    <RenamedType>
+      <Type guid="ebd55eba-6d7e-4a43-b336-ee6408e48044">GEMMA</Type>
+      <From>GEMMA</From>
+      <To>EGEMMA</To>
+    </RenamedType>
+  </Renames>
+</Refactors>

@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="FB_Coordinador_ST" Id="{30bafdc6-6690-419c-8cbe-ff0c64e369c1}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Coordinador_ST
+VAR_INPUT
+	Tray_1 : BOOL; 
+	Tray_2 : BOOL;
+END_VAR
+VAR_OUTPUT
+
+END_VAR
+VAR
+	Director : FB_Director_ST;
+	Coordinador : FB_Coordinador_SFC;
+	Discharger : FB_Discharger_ST;
+	ModeAns : GEMMA;
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Director(IC:= Coordinador.IC, Manual:= Panel.Manual, Go:= Panel.Go, Stop := Panel.Stop,
+		 Play := Panel.Play, Cancel := Panel.Stop, EndBatch := Coordinador.Done,
+		 End := Panel.End, Fail := Fail);
+
+Panel(Mode := Director.Mode);
+		 
+Coordinador(IC:=Discharger.IC,
+		    Discharger_Execute:=Director.Discharge,
+			Discharger_Ready:= Discharger.Ready,
+			Discharger_Done:= Discharger.Done,
+			Tray_1 := Tray_1,
+			Tray_2:= Tray_2);
+			
+// Associate module variables
+Discharger (Execute :=Coordinador.Discharger_Execute,
+			Ack := Coordinador.Discharger_Ack,
+			Reset := Director.Reset,
+			Pause := Director.Pause,
+			B1 := Tray_1,
+			B2 := Tray_2);
+			
+			
+			
+	]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Coordinador_ST">
+      <LineId Id="49" Count="2" />
+      <LineId Id="56" Count="0" />
+      <LineId Id="53" Count="0" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="47" Count="1" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="46" Count="0" />
+      <LineId Id="45" Count="0" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="43" Count="1" />
+      <LineId Id="41" Count="1" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="25" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

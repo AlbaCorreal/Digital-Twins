@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="FB_Discharger_ST" Id="{506e334d-b9dd-4d31-9245-eeba04b577cb}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Discharger_ST EXTENDS FB_Object_Template_ST
+VAR_INPUT
+	B1: BOOL; 
+	B2: BOOL;
+	dcha_1 AT %I*: BOOL;
+	dcha_2 AT %I*: BOOL;
+	izda_1 AT %I*: BOOL;
+	izda_2 AT %I*: BOOL;
+	arriba AT %I*: BOOL;
+	abajo  AT %I*: BOOL;
+	cogido AT %I*: BOOL;
+END_VAR
+VAR_OUTPUT
+	avanza_1 AT %Q*: BOOL;
+	avanza_2 AT %Q*: BOOL;
+	baja	 AT %Q*: BOOL;
+	coge 	 AT %Q*: BOOL;
+END_VAR
+VAR
+	Discharger : FB_Discharger_SFC;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//Define initial conditions
+IC := izda_1 AND izda_2 AND arriba AND NOT cogido;
+//Declare module
+Discharger(Execute:=Execute,
+		   Ack:=Ack,
+		   SFCReset:=Reset,
+		   SFCPause:=Pause,
+		   IC:=IC,
+		   B1:=B1,
+		   B2:=B2,
+		   dcha_1:=dcha_1,
+		   dcha_2:=dcha_2,
+		   izda_1:=izda_1,
+		   izda_2:=izda_2,
+		   arriba:=arriba,
+		   abajo:=abajo,
+		   cogido:=cogido
+);
+		   
+//Declare module actuators
+Ready := Discharger.Ready;
+Done := Discharger.Done;
+avanza_1 := Discharger.avanza_1;
+avanza_2 := Discharger.avanza_2;
+baja := Discharger.baja;
+coge := Discharger.coge;]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Discharger_ST">
+      <LineId Id="55" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="32" Count="3" />
+      <LineId Id="37" Count="3" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="46" Count="0" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="45" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="49" Count="4" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

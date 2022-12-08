@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <DUT Name="GEMMA" Id="{ebd55eba-6d7e-4a43-b336-ee6408e48044}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE GEMMA :
+(
+	  (* Modes de la Guia de Estudio de los Modes de Marcha y Parada *)
+    (* [Modes du Guide d'Etude des Modes de Marche et d'Arrêt] *)
+    (* [Modes of Study Guide of the Modes of Operating and Stopping] *)
+
+    (* Procedimientos de parada [les procédures d'arrets/stop procedures] *)
+    A1ParadaInicial, (*  0: parada en el estado inicial
+               [arrêt dans etat initial] 
+               [stopped in the initial state] *)
+    A2ParaFinCiclo, (*  1: parada solicitada a final de ciclo
+               [arret demandé en fin de cycle] 
+               [requested end cycle stop] *)
+    A3ParadaEstado, (*  2: parada solicitada en un estado determinado
+               [arret demande dans etat determine] 
+               [requested particular state stop] *)
+    A4ParadaObtenida, (*  3: parada obtenida
+               [arret obtenu] 
+               [obteined stop] *)
+    A5PreparandoTrasFallo, (*  4: preparacion para la recuperacion del fallo
+               [preparation pour remise en route apres defaillance] 
+               [preparation for the recovery of the Fail] *)
+    A6Inicializando, (*  5: situando la PO en el estado inicial
+               [mise PO dans état initial] 
+               [set the PO in initial state] *)
+    A7SituandoEstado, (*  6: situando la PO en un estado determinado
+               [mise PO dans état déterminé]
+               [set the PO in a certain state] *)
+
+    (* Procedimientos de funcionamiento [les procédures de fonctionnement/operating procedures] *)
+    F1ProduccionNormal, (*  7: produccion normal
+               [production normale] 
+               [normal operation] *)
+    F2SecuenciaPreparacion, (*  8: secuencia de preparacion
+               [marche de preparation] 
+               [preparation sequence] *)
+    F3SecuenciaFinalizacion, (*  9: secuencia de finalizacion
+               [marche de cloture] 
+               [ending sequence] *)
+    F4VerificacionSinOrden, (* 10: verificacion en desorden
+               [marche de verification dans le desordre] 
+               [verification with no order] *)
+    F5VerificacionOrdenada, (* 11: verificacion en orden
+               [marche de verification dans l'ordre] 
+               [verification whit order] *)
+    F6Probando, (* 12: prueba
+               [marche de test] 
+               [test] *)
+
+    (* Procedimientos de fallo [les procédures en défaillances] *)
+    D1ParadaEmergencia, (* 13: parada de emergencia
+               [arret d'urgence] 
+               [emergency stop] *)
+    D2TratamientoFallos, (* 14: diagnostico y/o tratamiento de los fallos
+               [diagnostic et/ou traitement de la défaillance] 
+               [diagnosis and/or treatment of Fails] *)
+    D3ProducirConFallos  (* 15: produccion a pesar de los fallos
+               [production tout de même] 
+               [production despite the Fails] *)
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

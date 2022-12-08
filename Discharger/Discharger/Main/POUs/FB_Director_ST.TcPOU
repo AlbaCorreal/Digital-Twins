@@ -1,0 +1,178 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="FB_Director_ST" Id="{3fb3014d-47ea-4619-83ad-39f42df1d22f}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Director_ST
+VAR_INPUT
+	IC: BOOL := TRUE;
+	Manual: BOOL;
+	Go: BOOL;
+	Stop: BOOL;
+	Play: BOOL;
+	Cancel: BOOL;
+	EndBatch: BOOL;
+	//Emergency: BOOL;
+	End: BOOL;
+	Fail: BOOL;
+END_VAR
+VAR_OUTPUT
+	Mode: GEMMA := GEMMA.A6Inicializando;
+	Arret: BOOL;
+	Defail: BOOL;
+	Fonctionnement: BOOL;
+	Pause: BOOL;
+	Stopped: BOOL;
+	Production: BOOL;
+	
+END_VAR
+VAR
+	ModeAns: GEMMA;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Arret := (Mode >= GEMMA.A1ParadaInicial) AND (Mode <= GEMMA.A7SituandoEstado);
+Defail := (Mode >= GEMMA.D1ParadaEmergencia) AND (Mode <= GEMMA.D3ProducirConFallos);
+Fonctionnement := (Mode >= GEMMA.F1ProduccionNormal) AND (Mode <= GEMMA.F6Probando);
+Pause := (Mode = GEMMA.A3ParadaEstado) OR (Mode = GEMMA.A4ParadaObtenida) 
+		  OR (Mode = GEMMA.A5PreparandoTrasFallo)OR (Mode = GEMMA.D1ParadaEmergencia)
+		  OR (Mode = GEMMA.D2TratamientoFallos);
+Stopped := (Mode >= GEMMA.A1ParadaInicial) AND (Mode <= GEMMA.A7SituandoEstado);
+Production := (Mode = GEMMA.A2ParaFinCiclo) 
+			   OR (Mode = GEMMA.A3ParadaEstado)
+			   OR (Mode = GEMMA.F1ProduccionNormal)
+			   OR (Mode = GEMMA.F2SecuenciaPreparacion) 
+			   OR (Mode = GEMMA.F3SecuenciaFinalizacion) 
+			   OR (Mode = GEMMA.F5VerificacionOrdenada)
+			   OR (Mode = GEMMA.F6Probando)
+			   OR (Mode = GEMMA.D3ProducirConFallos);
+
+CASE Mode OF
+
+	(*GEMMA.A6Inicializando: (* A6 -> A1 o F4 *)
+		ModeAns := GEMMA.A6Inicializando;
+		IF IC THEN 
+			Mode := GEMMA.A1ParadaInicial;
+		ELSIF Manual THEN 				
+			Mode := GEMMA.F4VerificacionSinOrden;
+		END_IF*)
+
+	GEMMA.A1ParadaInicial: (* A1 -> A6, F4, F5, F2 o F6 *)
+		ModeAns := GEMMA.A1ParadaInicial;
+		IF NOT IC THEN // IF NOT Restaurada THEN
+			Mode := GEMMA.A6Inicializando;				
+		ELSIF Manual THEN 				
+			Mode := GEMMA.F4VerificacionSinOrden;			            
+		ELSIF Go THEN
+			Mode := GEMMA.F2SecuenciaPreparacion;
+		ELSE
+			; // Esperar a que se pulse el bortón de marcha
+		END_IF
+		
+	GEMMA.A3ParadaEstado: 
+		IF Fail THEN																// A3 -> D2
+			Mode := GEMMA.D2TratamientoFallos;
+		ELSIF Stop THEN															// A3 -> A4
+			Mode := GEMMA.A4ParadaObtenida;
+		ELSE
+			; // Seguir produciendo hasta que todos los módulos paren en un estado estable
+		END_IF
+					
+	GEMMA.A4ParadaObtenida:	;													// A4 -> retorna
+	GEMMA.A5PreparandoTrasFallo:
+		IF Play THEN
+			Mode := ModeAns;
+		ELSIF Cancel THEN
+			Mode := GEMMA.A6Inicializando;
+		END_IF; 		
+				
+	GEMMA.F1ProduccionNormal:	        
+		// cambios de modo actual
+		IF Fail THEN 															// cualquiera -> D2
+			ModeAns := GEMMA.A2ParaFinCiclo;
+			Mode := GEMMA.D2TratamientoFallos;
+		ELSIF Manual THEN				
+			Mode := GEMMA.A3ParadaEstado; 								// cualquiera -> A3
+		ELSIF Manual THEN 				
+			Mode := GEMMA.F4VerificacionSinOrden;						// cualquiera -> F4
+		ELSIF EndBatch THEN 			
+			Mode:= GEMMA.F3SecuenciaFinalizacion;
+		ELSE                
+			; // continuar con la preparación/producción/finalización
+		END_IF
+		
+	GEMMA.F3SecuenciaFinalizacion:
+		IF End THEN
+			Mode := GEMMA.A1ParadaInicial;
+		ELSE 
+			;
+		END_IF
+					
+	GEMMA.F4VerificacionSinOrden: (* F4 -> ModePrev *)
+		IF Fail THEN
+		Mode := GEMMA.D2TratamientoFallos;				
+		ELSIF NOT Manual THEN				
+			Mode := GEMMA.A6Inicializando; // al salir del modo planta volver al modo previo				
+		ELSE                
+			; // Seguir en modo manual
+		END_IF
+	(*GEMMA.D1ParadaEmergencia: (* Parada de emergencia *)
+		IF NOT Emergency THEN //  TODO CONSIGNA DE EMERGENCIA DEBE TENER ENCUENTA LA POC
+			Mode := GEMMA.A6Inicializando; // Al quitar la parada de emergencia hay que reinicializar la estación
+		ELSIF Manual then							// desde A1 se puede entrar F4 para arreglar el problema
+			ModeAns := GEMMA.D1ParadaEmergencia;
+			Mode := GEMMA.F4VerificacionSinOrden;
+		ELSE                
+			; // Esperar a que se quite la parada de emergencia
+		END_IF*)
+		
+	GEMMA.D2TratamientoFallos: (* Diagnostico/tratamiento de los fallos *)
+		IF NOT Fail THEN // el fallo se resuelve por sí solo (no debería pasar)
+			Mode := GEMMA.A5PreparandoTrasFallo;
+		ELSIF Manual THEN // se pasa a modo F4 para arreglarlo
+			Mode := GEMMA.F4VerificacionSinOrden;
+		ELSIF Go THEN // se pulsa Marcha para intentar recuperar                
+			Mode := GEMMA.A5PreparandoTrasFallo;
+		END_IF
+
+
+END_CASE]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Director_ST">
+      <LineId Id="9" Count="0" />
+      <LineId Id="28" Count="1" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="39" Count="1" />
+      <LineId Id="38" Count="0" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="41" Count="1" />
+      <LineId Id="44" Count="3" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="56" Count="7" />
+      <LineId Id="206" Count="0" />
+      <LineId Id="68" Count="5" />
+      <LineId Id="76" Count="1" />
+      <LineId Id="80" Count="2" />
+      <LineId Id="223" Count="0" />
+      <LineId Id="208" Count="14" />
+      <LineId Id="207" Count="0" />
+      <LineId Id="84" Count="0" />
+      <LineId Id="98" Count="0" />
+      <LineId Id="111" Count="2" />
+      <LineId Id="204" Count="0" />
+      <LineId Id="114" Count="3" />
+      <LineId Id="125" Count="1" />
+      <LineId Id="133" Count="2" />
+      <LineId Id="240" Count="0" />
+      <LineId Id="136" Count="0" />
+      <LineId Id="234" Count="0" />
+      <LineId Id="237" Count="2" />
+      <LineId Id="235" Count="1" />
+      <LineId Id="226" Count="3" />
+      <LineId Id="231" Count="2" />
+      <LineId Id="224" Count="0" />
+      <LineId Id="164" Count="17" />
+      <LineId Id="184" Count="1" />
+      <LineId Id="50" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
