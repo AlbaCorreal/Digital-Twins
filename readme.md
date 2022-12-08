@@ -5,3 +5,4 @@ Cread vuestra propia rama para trabajar.
 Toda la info interesante que encontréis en internet subidla a OneDrive. 
 
 https://uma365-my.sharepoint.com/:f:/g/personal/alba_correal_uma_es/ErZ6N3adUKxPh0R5gGqSxiwBoB8LTiJ93PwqHZWaYM7izQ?e=jU3SwN
+Conectar a Matlab: https://academy.visualcomponents.com/lessons/connect-a-remote-opc-ua-server/
