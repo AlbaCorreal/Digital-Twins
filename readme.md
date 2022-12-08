@@ -10,11 +10,16 @@ Cread vuestra propia rama para trabajar. .</p>
 ## Documentación
 Toda la info interesante que encontréis en internet subidla a OneDrive. (@lanchitosinc sube ahí la documentación de estadística)
 
-https://uma365-my.sharepoint.com/:f:/g/personal/alba_correal_uma_es/ErZ6N3adUKxPh0R5gGqSxiwBoB8LTiJ93PwqHZWaYM7izQ?e=jU3SwN
+  <a href="https://uma365-my.sharepoint.com/:f:/g/personal/alba_correal_uma_es/ErZ6N3adUKxPh0R5gGqSxiwBoB8LTiJ93PwqHZWaYM7izQ?e=jU3SwN">
+    <img src="https://img.shields.io/badge/-Onedrive-blue"/>
+  </a>
+
 Conectar a Matlab: https://academy.visualcomponents.com/lessons/connect-a-remote-opc-ua-server/
 
 ## Visualizar tareas
-https://github.com/users/AlbaCorreal/projects/2/views/1
-
+<a href="https://github.com/users/AlbaCorreal/projects/2/views/1">
+    <img src="https://img.shields.io/badge/-Tareas-yellow"/>
+  </a>
+  
 ## Issue para las ideas
 https://github.com/AlbaCorreal/Digital-Twins/issues/12
