@@ -1,6 +1,12 @@
-# GEMELOS DIGITALES
-Bienvenidos!
-Cread vuestra propia rama para trabajar. 
+<div align="center">
+<img src="https://www.gemelosdigitales.uma.es/wp-content/uploads/2021/07/cropped-Logo-combinado.jpg" width="500"/>
+<br>
+<img src="https://www.link.uma.es/wp-content/uploads/2021/10/gemelodigital1.png" width="500"/>
+<h1>GEMELOS DIGITALES</h1>
+<p> Bienvenidos!
+Cread vuestra propia rama para trabajar. .</p> 
+</div>
+
 ## Documentación
 Toda la info interesante que encontréis en internet subidla a OneDrive. (@lanchitosinc sube ahí la documentación de estadística)
 
