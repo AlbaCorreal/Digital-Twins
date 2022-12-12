@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="FB_Discharger_ST" Id="{3cb070c5-37e2-47c0-b07b-7ea68d350582}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Discharger_ST EXTENDS FB_Object_Template_ST
+VAR_INPUT
+	Tray_1: BOOL; 
+	Tray_2: BOOL;
+	dcha_1 AT %I*: BOOL;
+	dcha_2 AT %I*: BOOL;
+	izda_1 AT %I*: BOOL;
+	izda_2 AT %I*: BOOL;
+	arriba AT %I*: BOOL;
+	abajo  AT %I*: BOOL;
+	cogido AT %I*: BOOL;
+END_VAR
+VAR_OUTPUT
+	avanza_1 AT %Q*: BOOL;
+	avanza_2 AT %Q*: BOOL;
+	baja	 AT %Q*: BOOL;
+	coge 	 AT %Q*: BOOL;
+	Fail : BOOL;
+	Timer : TON;
+END_VAR
+VAR
+	Discharger : FB_Discharger_SFC;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//Define initial conditions
+IC := izda_1 AND izda_2 AND arriba AND NOT cogido;
+Fail := F_Fail(Timer);
+//Declare module
+Discharger(Execute:=Execute,
+		   Ack:=Ack,
+		   SFCReset:=Reset,
+		   SFCPause:=Pause,
+		   IC:=IC,
+		   Tray_1:=Tray_1,
+		   Tray_2:=Tray_2,
+		   dcha_1:=dcha_1,
+		   dcha_2:=dcha_2,
+		   izda_1:=izda_1,
+		   izda_2:=izda_2,
+		   arriba:=arriba,
+		   abajo:=abajo,
+		   cogido:=cogido,
+Restore := _REFACTOR_
+);
+		   
+//Declare module actuators
+Ready := Discharger.Ready;
+Done := Discharger.Done;
+avanza_1 := Discharger.avanza_1;
+avanza_2 := Discharger.avanza_2;
+baja := Discharger.baja;
+coge := Discharger.coge;
+
+]]></ST>
+    </Implementation>
+    <Method Name="F_Fail" Id="{44a410f8-e807-405e-9e5c-681047449adb}">
+      <Declaration><![CDATA[METHOD F_Fail : BOOL
+VAR_INPUT
+	Timer : TON;
+END_VAR
+VAR
+	NumError : UDINT;
+	Message  : STRING;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[F_Fail := FALSE;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="FB_Discharger_ST">
+      <LineId Id="31" Count="1" />
+      <LineId Id="82" Count="0" />
+      <LineId Id="33" Count="14" />
+      <LineId Id="84" Count="0" />
+      <LineId Id="48" Count="7" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="78" Count="0" />
+      <LineId Id="80" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_Discharger_ST.F_Fail">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

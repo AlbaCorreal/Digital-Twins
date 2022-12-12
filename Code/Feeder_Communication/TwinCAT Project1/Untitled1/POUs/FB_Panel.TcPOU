@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="FB_Panel" Id="{3240d199-c0e6-4015-b333-b42727644e13}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Panel
+VAR_INPUT
+   Mode: GEMMA;
+   Restart_Time: TIME := T#3S;
+
+END_VAR
+VAR_OUTPUT
+	Emergency: BOOL;
+	Go:     BOOL;
+	Manual:     BOOL;
+    Stop:       BOOL;
+    Reboot:   BOOL; (* Restablece situacion inicial *)
+    Restore:   BOOL; (* Restaura condiciones iniciales *)
+END_VAR
+VAR
+    (* Bloques funcionales *)
+    CLK: FB_Clock;
+    Trig_PGo: R_TRIG;
+    TmpReinicio: TON;
+
+    (* Entradas *)
+    PEmergency AT %I*: BOOL; (* Pulsador de parada de emergencia [EMERGENCY STOP] *)
+    PGo AT %I*: BOOL; (* Pulsador de marcha [START] *)
+    PStop AT %I*: BOOL := TRUE; (* Pulsador de parada [STOP] *)
+    PManual AT %I*: BOOL; (* Selector de Mode AUTO/MAN [AUTO/MAN] *)
+
+    (* Salidas *)
+    Red_Lamp    AT %Q*: BOOL; (* Lampara de alarma [ALARM] *)
+	Yellow_Lamp AT %Q*: BOOL; (* Lampara de alarma [ALARM] *)
+	Green_Lamp  AT %Q*: BOOL; (* Lampara de alarma [ALARM] *)
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(* PARAMETROS DE SALIDA *)
+Emergency:= PEmergency;
+Manual := PManual;
+Reboot := TmpReinicio.Q;
+Restore := PGo;
+Go := Trig_PGo.Q;
+Stop := PStop;
+
+(* ACCIONES *)
+Red_Lamp := (Mode = F3SecuenciaFinalizacion) OR (((Mode = D1ParadaEmergencia) OR (Mode = D2TratamientoFallos) OR (Mode = F2SecuenciaPreparacion)) AND CLK.Q);
+Yellow_Lamp := ((Mode = A6Inicializando) OR (Mode = D1ParadaEmergencia) OR (Mode = D2TratamientoFallos)) AND CLK.Q;
+Green_Lamp := ((Mode = A2ParaFinCiclo) OR (Mode = F1ProduccionNormal) OR (Mode = F2SecuenciaPreparacion) OR (Mode = F3SecuenciaFinalizacion)) OR ((Mode = A1ParadaInicial) AND CLK.Q);
+
+(* BLOQUES FUNCIONALES *)
+CLK();
+
+Trig_PGo(CLK := PGo);
+
+TmpReinicio(
+    IN := PGo AND NOT PStop,
+	PT := Restart_Time
+    );
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Panel">
+      <LineId Id="42" Count="3" />
+      <LineId Id="47" Count="17" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

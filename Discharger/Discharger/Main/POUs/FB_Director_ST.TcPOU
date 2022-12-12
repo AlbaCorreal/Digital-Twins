@@ -7,7 +7,7 @@ VAR_INPUT
 	Manual: BOOL;
 	Go: BOOL;
 	Stop: BOOL;
-	Play: BOOL;
+	Resume: BOOL;
 	Cancel: BOOL;
 	EndBatch: BOOL;
 	//Emergency: BOOL;
@@ -77,7 +77,7 @@ CASE Mode OF
 					
 	GEMMA.A4ParadaObtenida:	;													// A4 -> retorna
 	GEMMA.A5PreparandoTrasFallo:
-		IF Play THEN
+		IF Resume THEN
 			Mode := ModeAns;
 		ELSIF Cancel THEN
 			Mode := GEMMA.A6Inicializando;

@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="FB_Object_Template_ST" Id="{797dedf9-597c-4ba6-b46e-35ce2dcc900b}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Object_Template_ST
+VAR_INPUT
+	// Control variables
+	Execute: BOOL;
+	Ack: BOOL;
+	Reset: BOOL; 
+	Pause: BOOL;
+	// Physical variables
+	
+END_VAR
+VAR_OUTPUT
+	//Control variables
+	Ready: BOOL;
+	Done: BOOL;
+	//Physical Variables
+	
+END_VAR
+VAR
+	// Initial conditions
+	IC: BOOL := TRUE;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Object_Template_ST">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

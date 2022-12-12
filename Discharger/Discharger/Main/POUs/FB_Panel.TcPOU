@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="FB_Panel" Id="{5cc8ff3b-ac1e-4c97-9761-d5b7ff6ab677}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Panel
+FUNCTION_BLOCK FB_Panel
+
+VAR_INPUT
+   Modo: GEMMA;
+   Restart_Time: TIME := T#3S;
+
+END_VAR
+VAR_OUTPUT
+	Emergency: BOOL;
+	Go:     BOOL;
+	Manual:     BOOL;
+    Stop:       BOOL;
+    Restart:   BOOL; (* Restablece situacion inicial *)
+    Restablece: BOOL; (* Restablece la condicion de fallo *)
+    Restaura:   BOOL; (* Restaura condiciones iniciales *)
+END_VAR
+VAR
+    (* Bloques funcionales *)
+    CLK: FB_Clock;
+    Trig_PGo: R_TRIG;
+    TmpReinicio: TON;
+
+    (* Entradas *)
+    PEmergency AT %I*: BOOL; (* Pulsador de parada de emergencia [EMERGENCY STOP] *)
+    PGo AT %I*: BOOL; (* Pulsador de marcha [START] *)
+    PStop AT %I*: BOOL := TRUE; (* Pulsador de parada [STOP] *)
+    PManual AT %I*: BOOL; (* Selector de modo AUTO/MAN [AUTO/MAN] *)
+
+    (* Salidas *)
+    Red_Lamp    AT %Q*: BOOL; (* Lampara de alarma [ALARM] *)
+	Yellow_Lamp AT %Q*: BOOL; (* Lampara de alarma [ALARM] *)
+	Green_Lamp  AT %Q*: BOOL; (* Lampara de alarma [ALARM] *)
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(* PARAMETROS DE SALIDA *)
+Emergencia := PEmergency;
+Manual := PManual;
+Restart := TmpReinicio.Q;
+Restablece := PGo;
+Restaura := PGo;
+Marcha := Trig_PGo.Q;
+Para := PStop;
+
+(* ACCIONES *)
+Red_Lamp := (Modo = F3SecuenciaFinalizacion) OR (((Modo = D1ParadaEmergencia) OR (Modo = D2TratamientoFallos) OR (Modo = F2SecuenciaPreparacion)) AND CLK.Q);
+Yellow_Lamp := ((Modo = A6Inicializando) OR (Modo = D1ParadaEmergencia) OR (Modo = D2TratamientoFallos)) AND CLK.Q;
+Green_Lamp := ((Modo = A2ParaFinCiclo) OR (Modo = F1ProduccionNormal) OR (Modo = F2SecuenciaPreparacion) OR (Modo = F3SecuenciaFinalizacion)) OR ((Modo = A1ParadaInicial) AND CLK.Q);
+
+(* BLOQUES FUNCIONALES *)
+CLK();
+
+Trig_PGo(CLK := PGo);
+
+TmpReinicio(
+    IN := PGo AND NOT PStop,
+	PT := Restart_Time
+    );
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Panel">
+      <LineId Id="55" Count="11" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="80" Count="0" />
+      <LineId Id="71" Count="6" />
+      <LineId Id="82" Count="0" />
+      <LineId Id="79" Count="0" />
+      <LineId Id="70" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

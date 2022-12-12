@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
   <DUT Name="GEMMA" Id="{ebd55eba-6d7e-4a43-b336-ee6408e48044}">
-    <Declaration><![CDATA[{attribute 'qualified_only'}
-{attribute 'strict'}
+    <Declaration><![CDATA[
 TYPE GEMMA :
 (
 	  (* Modes de la Guia de Estudio de los Modes de Marcha y Parada *)

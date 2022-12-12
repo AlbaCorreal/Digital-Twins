@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="FB_Controller" Id="{0de43ee4-da15-4690-902f-7120ea409570}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Controller EXTENDS FB_Object_Template_ST
+VAR_INPUT
+	//Discharger
+	Tray_1 : BOOL; 
+	Tray_2 : BOOL;
+END_VAR
+VAR_OUTPUT
+	Fail : BOOL;
+END_VAR
+VAR
+	Director   : FB_Director;
+	Discharger : FB_Discharger_ST;
+	Production : FB_F1Production_SFC;
+	Panel      : FB_Panel;
+	End: BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IC := Discharger.IC;
+End := Production.Done;
+Director(Emergency :=  Panel.Emergency,
+		 Endbatch := Production.Done,
+		 End := End,
+		 Fail := Fail,
+		 Go := Panel.Go,
+		 Manual := Panel.Manual,
+		 Reboot := Panel.Reboot,
+		 Restore := IC,
+		 Stop := Panel.Stop
+		 );
+
+Production(Execute := (Director.Mode=F1ProduccionNormal), 
+			Ack :=Ack,
+			SFCReset:=Reset,
+			SFCPause :=Pause,
+			IC:=IC,
+			Discharger_Done:=Discharger.Done,
+			);
+			
+		 
+Panel (Mode := Director.Mode);
+
+Discharger(Execute:=Production.Discharger_Execute,
+			Ack:=Production.Discharger_Ack,
+			Reset:=Reset,
+			Pause:=Pause,
+			Tray_1:=Tray_1,
+			Tray_2:=Tray_2
+			);]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Controller">
+      <LineId Id="61" Count="0" />
+      <LineId Id="75" Count="0" />
+      <LineId Id="57" Count="0" />
+      <LineId Id="63" Count="0" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="93" Count="0" />
+      <LineId Id="66" Count="0" />
+      <LineId Id="96" Count="0" />
+      <LineId Id="67" Count="0" />
+      <LineId Id="70" Count="2" />
+      <LineId Id="56" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="98" Count="0" />
+      <LineId Id="97" Count="0" />
+      <LineId Id="99" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="32" Count="4" />
+      <LineId Id="31" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

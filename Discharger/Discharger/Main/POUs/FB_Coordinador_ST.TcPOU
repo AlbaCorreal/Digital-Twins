@@ -7,6 +7,11 @@ VAR_INPUT
 	Tray_2 : BOOL;
 END_VAR
 VAR_OUTPUT
+	IC : BOOL;
+	Fail : BOOL;
+	Pause : BOOL;
+	Mode := GEMMA;
+END_VAR
 
 END_VAR
 VAR
@@ -14,18 +19,18 @@ VAR
 	Coordinador : FB_Coordinador_SFC;
 	Discharger : FB_Discharger_ST;
 	ModeAns : GEMMA;
+	Panel : FB_Panel;
 	
 END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[Director(IC:= Coordinador.IC, Manual:= Panel.Manual, Go:= Panel.Go, Stop := Panel.Stop,
-		 Play := Panel.Play, Cancel := Panel.Stop, EndBatch := Coordinador.Done,
-		 End := Panel.End, Fail := Fail);
+		 Resume := Panel.Go, Cancel := Panel.Stop, EndBatch := Coordinador.Done,
+		 End := Coordinador.End, Fail := Fail);
 
 Panel(Mode := Director.Mode);
 		 
-Coordinador(IC:=Discharger.IC,
-		    Discharger_Execute:=Director.Discharge,
+Coordinador(Execute:= Director.IC:=Discharger.IC,
 			Discharger_Ready:= Discharger.Ready,
 			Discharger_Done:= Discharger.Done,
 			Tray_1 := Tray_1,
@@ -33,7 +38,7 @@ Coordinador(IC:=Discharger.IC,
 			
 // Associate module variables
 Discharger (Execute :=Coordinador.Discharger_Execute,
-			Ack := Coordinador.Discharger_Ack,
+			Ack := NOT (Coordinador.Discharger_Execute),
 			Reset := Director.Reset,
 			Pause := Director.Pause,
 			B1 := Tray_1,
@@ -49,7 +54,6 @@ Discharger (Execute :=Coordinador.Discharger_Execute,
       <LineId Id="53" Count="0" />
       <LineId Id="52" Count="0" />
       <LineId Id="9" Count="0" />
-      <LineId Id="28" Count="0" />
       <LineId Id="47" Count="1" />
       <LineId Id="32" Count="0" />
       <LineId Id="34" Count="0" />

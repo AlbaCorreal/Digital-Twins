@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="FB_Clock" Id="{8313501e-7e19-4819-84b8-b7fac80dddbc}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Clock
+(*
+Copyright (c) 2009-2017 victortorreslopez
+GNU General Public License
+*)
+VAR_INPUT
+  EN: BOOL := TRUE;	(* ENabled *)
+  PT: TIME := T#500ms; (* Semicycle time *)
+END_VAR
+VAR_OUTPUT
+  ET: TIME; (* Elapsed time *)
+  Q: BOOL; (* Square wave *)
+END_VAR
+VAR
+  Timer: TON; (* Auto-pilot timer *)
+END_VAR
+
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(* OUTPUT FUNCTION *)
+IF Timer.Q THEN
+  Q := NOT Q;
+END_IF
+
+(* FUNCTION BLOCKS *)
+Timer(IN := EN AND NOT Timer.Q, PT := PT, ET => ET);]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Clock">
+      <LineId Id="32" Count="5" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
