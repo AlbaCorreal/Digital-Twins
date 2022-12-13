@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="FB_Conveyor_ST" Id="{7a6aca7d-141b-4857-b09f-fecc4eded2de}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Conveyor_ST EXTENDS FB_Object_Template_ST
+VAR_INPUT
+	
+// Finales de carrera
+	END_Conv1_B1 AT %I* :BOOL;
+	END_Conv2_B1 AT %I* :BOOL;
+	END_Conv1_B2 AT %I* :BOOL;
+	END_Conv2_B2 AT %I* :BOOL;
+	END_Conv_S AT %I* :BOOL;
+
+//Señales de control
+	Produce_B1:BOOL;
+	END_Produce_B1:BOOL;
+	Produce_B2:BOOL;
+	END_Produce_B2:BOOL;
+	Take_Plate:BOOL;
+
+END_VAR
+VAR_OUTPUT
+	
+//Controles de las cintas
+	MOV_Conv1_B1 AT %Q* :BOOL;
+	MOV_Conv2_B1 AT %Q* :BOOL;
+	MOV_Conv1_B2 AT %Q* :BOOL;
+	MOV_Conv2_B2 AT %Q* :BOOL;
+	MOV_Conv_S AT %Q* :BOOL;
+
+END_VAR
+VAR
+	
+	Conveyors_B1: FB_Conveyor_SFC;
+	Conveyors_B2: FB_Conveyor_SFC;
+	Conveyor_S: FB_Conveyor_SFC;
+
+
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//Condiciones iniciales
+IC := TRUE;
+//Declaracion de las cintas
+Conveyors_B1(Execute:=Execute,
+		   Ack:=Ack,
+		   SFCReset:=Reset,
+		   SFCPause:=Pause,
+		   IC:=IC,
+		   END_Conv1 := END_Conv1_B1,
+		   END_Conv2 := END_Conv2_B1,
+		   Produce := Produce_B1,
+		   END_Produce := END_Produce_B1
+		   
+);
+
+Conveyors_B2(Execute:=Execute,
+		   Ack:=Ack,
+		   SFCReset:=Reset,
+		   SFCPause:=Pause,
+		   IC:=IC,
+		   END_Conv1 := END_Conv1_B2,
+		   END_Conv2 := END_Conv2_B2,
+		   Produce := Produce_B2,
+		   END_Produce := END_Produce_B2
+		   
+);
+
+Conveyor_S(Execute:=Execute,
+		   Ack:=Ack,
+		   SFCReset:=Reset,
+		   SFCPause:=Pause,
+		   IC:=IC,
+		   END_Conv1 := FALSE,
+		   END_Conv2 := END_Conv_S,
+		   Produce := FALSE,
+		   END_Produce := Take_Plate
+		   
+);
+		   
+//Actuadores
+	MOV_Conv1_B1 := Conveyors_B1.MOV_Conv1;
+	MOV_Conv2_B1 := Conveyors_B1.MOV_Conv2;
+	MOV_Conv1_B2 := Conveyors_B2.MOV_Conv1;
+	MOV_Conv2_B2 := Conveyors_B2.MOV_Conv2;
+	MOV_Conv_S := Conveyor_S.MOV_Conv2 OR Conveyor_S.MOV_Conv1;
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Conveyor_ST">
+      <LineId Id="45" Count="44" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

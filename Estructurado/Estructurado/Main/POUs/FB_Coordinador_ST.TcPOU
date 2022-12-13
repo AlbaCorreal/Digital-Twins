@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="FB_Coordinador_ST" Id="{9ac240e1-403a-48e5-8518-ffcc05fd2828}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Coordinador_ST EXTENDS FB_Object_Template_ST
+VAR_INPUT
+	//Discharger
+	Tray_1 : BOOL; 
+	Tray_2 : BOOL;
+	
+END_VAR
+VAR_OUTPUT
+	Fail : BOOL;
+	B1   : BOOL;
+	
+END_VAR
+VAR
+	
+	Discharger : FB_Discharger_ST;
+	Elevators  : FB_Elevator_ST;
+	Conveyors  : FB_Conveyor_ST;
+	Production: FB_Coordinador_SFC;
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IC := Discharger.IC AND Elevators.IC AND Conveyors.IC;
+B1 := Selector(Tray_1,Tray_2);
+
+Discharger(Execute:=Production.Discharger_Execute,
+			Ack:=Production.Discharger_Ack,
+			Reset:=Reset,
+			Pause:=Pause,
+			Tray_1:=Tray_1,
+			Tray_2:=Tray_2
+			);
+			
+Elevators.Elevator_B1 (Execute:=Production.Elevator_B1_Execute,
+					  Ack:=Production.Elevator_B1_Ack,
+					  SFCReset:=Reset,
+					  SFCPause:=Pause,
+					  );
+					
+Elevators.Elevator_B2 (Execute:=Production.Elevator_B2_Execute,
+					  Ack:=Production.Elevator_B2_Ack,
+					  SFCReset:=Reset,
+					  SFCPause:=Pause,
+					  );
+					  
+Elevators.Elevator_S (Execute:=Production.Elevator_S_Execute,
+					  Ack:=Production.Elevator_S_Ack,
+					  SFCReset:=Reset,
+					  SFCPause:=Pause,
+					  );
+					  
+Conveyors.Conveyors_B1  (Execute := Production.Conveyor_B1_Execute,
+						Ack := Production.Conveyor_B1_Ack,
+						SFCReset := Reset,
+						SFCPause := Pause,
+						);
+						
+Conveyors.Conveyors_B2  (Execute := Production.Conveyor_B2_Execute,
+						Ack := Production.Conveyor_B2_Ack,
+						SFCReset := Reset,
+						SFCPause := Pause,
+						);
+
+Conveyors.Conveyor_S  (Execute := Production.Conveyor_S_Execute,
+						Ack := Production.Conveyor_S_Ack,
+						SFCReset := Reset,
+						SFCPause := Pause,
+						);]]></ST>
+    </Implementation>
+    <Method Name="Selector" Id="{2ba6b9ff-77fa-43f1-8d7f-ead74cc8d513}">
+      <Declaration><![CDATA[METHOD Selector : BOOL
+VAR_INPUT
+	
+	Tray_1 : BOOL;
+	Tray_2 : BOOL;
+
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF Tray_1 THEN
+	Selector := TRUE;
+ELSIF Tray_2 THEN
+	Selector := FALSE;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="FB_Coordinador_ST">
+      <LineId Id="33" Count="1" />
+      <LineId Id="58" Count="42" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_Coordinador_ST.Selector">
+      <LineId Id="13" Count="4" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

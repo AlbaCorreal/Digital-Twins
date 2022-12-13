@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="FB_Elevator_ST" Id="{742b6b03-1f08-44b9-a157-5008cec6a881}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Elevator_ST EXTENDS FB_Object_Template_ST
+VAR_INPUT
+	
+//Finales de Carrera
+	END_Up_B1 AT %I*: BOOL;
+	END_Down_B1 AT %I*: BOOL;
+	END_Up_B2 AT %I*: BOOL;
+	END_Down_B2 AT %I*: BOOL;
+	END_Up_S AT %I*: BOOL;
+	END_Down_S AT %I*: BOOL;
+	END_Step AT %I*: BOOL;
+	
+//Señales de control
+	Up_B1:BOOL;
+	Down_B1:BOOL;
+	Up_B2:BOOL;
+	Down_B2:BOOL;
+	Up_S:BOOL;
+	Down_S:BOOL;
+	Step:BOOL;
+
+END_VAR
+VAR_OUTPUT
+	
+//Acciones
+	MOV_Up_B1 AT %Q*: BOOL;
+	MOV_Down_B1 AT %Q*: BOOL;
+	MOV_Up_B2 AT %Q*: BOOL;
+	MOV_Down_B2 AT %Q*: BOOL;
+	MOV_Up_S AT %Q*: BOOL;
+	MOV_Down_S AT %Q*: BOOL;
+
+END_VAR
+VAR
+	
+	Elevator_B1: FB_Elevator_SFC;
+	Elevator_B2: FB_Elevator_SFC;
+	Elevator_S: FB_Elevator_SFC;
+
+END_VAR
+
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//Condicones Iniciales
+IC := END_Down_B1 AND END_Down_B2 AND END_Up_S;
+
+Elevator_B1(Execute:=Execute,
+		   Ack:=Ack,
+		   SFCReset:=Reset,
+		   SFCPause:=Pause,
+		   IC:=IC,
+		   END_Up:=END_Up_B1,
+		   END_Down:=END_Down_B1,
+		   END_Step:=TRUE,
+		   Up:=Up_B1,
+		   Down:=Down_B1,
+		   Step:=FALSE,	
+
+);
+
+Elevator_B2(Execute:=Execute,
+		   Ack:=Ack,
+		   SFCReset:=Reset,
+		   SFCPause:=Pause,
+		   IC:=IC,
+		   END_Up:=END_Up_B2,
+		   END_Down:=END_Down_B2,
+		   END_Step:=TRUE,
+		   Up:=Up_B2,
+		   Down:=Down_B2,
+		   Step:=FALSE,		   		
+
+);
+
+Elevator_S(Execute:=Execute,
+		   Ack:=Ack,
+		   SFCReset:=Reset,
+		   SFCPause:=Pause,
+		   IC:=IC,
+		   END_Up:=END_Up_S,
+		   END_Down:=END_Down_S,
+		   END_Step:=END_Step,
+		   Up:=Up_S,
+		   Down:=Down_S,
+		   Step:=Step,		   		
+
+);
+//Asignacion de acciones
+	MOV_Up_B1:=Elevator_B1.MOV_Up;
+	MOV_Down_B1:=Elevator_B1.MOV_Down;
+	MOV_Up_B2:=Elevator_B2.MOV_Up;
+	MOV_Down_B2:=Elevator_B2.MOV_Down;
+	MOV_Up_S:=Elevator_S.MOV_Up;
+	MOV_Down_S:=Elevator_S.MOV_Down OR Elevator_S.MOV_Step;]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Elevator_ST">
+      <LineId Id="51" Count="49" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
